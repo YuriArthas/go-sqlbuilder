@@ -75,13 +75,22 @@ func (c *Cond) LE(field string, value interface{}) string {
 
 // In represents "field IN (value...)".
 func (c *Cond) In(field string, value ...interface{}) string {
+	if len(value) == 0{
+		return "false"
+	}
+
 	vs := make([]string, 0, len(value))
 
 	for _, v := range value {
 		vs = append(vs, c.Args.Add(v))
 	}
 
-	return fmt.Sprintf("%s IN (%s)", Escape(field), strings.Join(vs, ", "))
+	s := strings.Join(vs, ", ")
+	if len(value) == 1{
+		s = s + ", "
+	}
+
+	return fmt.Sprintf("%s IN (%s)", Escape(field), s)
 }
 
 // NotIn represents "field NOT IN (value...)".
